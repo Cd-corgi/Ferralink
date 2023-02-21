@@ -90,7 +90,7 @@ const player = await client.FerraLink.createPlayer({
     deaf: true,
 });
 
-const resolve = await player.search(args.join(" ")); // spsearch is work for search spotify tracks.
+const resolve = await player.search(args.join(" "));
 const { loadType, tracks, playlistInfo } = resolve;
 
 if (loadType === "NO_MATCHES" || !tracks.length) return;
