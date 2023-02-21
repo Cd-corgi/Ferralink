@@ -81,9 +81,9 @@ class FerraLink extends EventEmitter {
 	 * @param {FerraLinkSearchOptions} options
 	 * @returns {Promise<shoukaku.LavalinkResponse>}
 	 */
-	async search(query, engine = this.manager.defaultSearchEngine) {
+	async search(query, options = { engine: this.defaultSearchEngine }) {
 		if (/^https?:\/\//.test(query)) {
-			if (engine === 'FerralinkSpotify') {
+			if (options.engine === 'FerralinkSpotify') {
 				if (this.manager.spotify.check(query)) {
 				    return await this.spotify.resolve(query);
 				}
@@ -91,7 +91,7 @@ class FerraLink extends EventEmitter {
 			}
 			return await this.shoukaku.getNode()?.rest.resolve(query);
 		}
-		if (engine === 'FerralinkSpotify') return await this.manager.spotify.search(query);
+		if (options.engine === 'FerralinkSpotify') return await this.manager.spotify.search(query);
 		const engineMap = {
 			youtube: 'ytsearch',
 			youtubemusic: 'ytmsearch',
@@ -100,7 +100,7 @@ class FerraLink extends EventEmitter {
 			deezer: "dzsearch",
 			yandex: 'ymsearch'
 		};
-		return await this.shoukaku.getNode()?.rest.resolve(`${engineMap[engine]}:${query}`);
+		return await this.shoukaku.getNode()?.rest.resolve(`${engineMap[options.engine]}:${query}`);
 	}
 
 	/**
