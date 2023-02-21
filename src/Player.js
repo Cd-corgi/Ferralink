@@ -180,7 +180,7 @@ class Player {
 			youtubemusic: 'ytmsearch',
 			soundcloud: 'scsearch',
 			spotify: 'spsearch',
-			dezzer: "dzsearch",
+			deezer: "dzsearch",
 			yandex: 'ymsearch'
 		};
 		return await this.shoukaku.node.rest.resolve(`${engineMap[engine]}:${query}`);
