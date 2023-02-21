@@ -1,6 +1,5 @@
 const { EventEmitter } = require('events');
 const { Shoukaku } = require('shoukaku');
-const shoukaku = require('shoukaku');
 const Player = require('./Player');
 const Spotify = require('./module/Spotify');
 
@@ -10,22 +9,22 @@ class FerraLink extends EventEmitter {
 	 * @param {import('shoukaku').NodeOption[]} nodes
 	 * @param {FerraLinkOptions} options
 	 */
-	constructor(options, connector, nodes, shoukakuoptions) {
+	constructor(options, connector) {
 		super();
 
-		/** @type {Shoukaku} */
-		this.shoukaku = new Shoukaku(connector, nodes, shoukakuoptions);
-
-		/** @type {Map<string, Player>} */
-		this.players = new Map();
-		
-		if (options) {
-		   /** @type {FerraLink.client} */
-	           this.client = options.BotClient;
-			
-		   /** @type {Spotify} */	
-		   this.spotify = new Spotify(options);
+		if (typeof options !== 'object') return console.log("[FerraLink] => FerralinkOptions must be an object");
+		if (!options.nodes) return console.log('[FerraLink] => FerralinkOptions must contain a nodes property');
+		if (!Array.isArray(options.nodes)) return console.log('[FerraLink] => FerralinkOptions.nodes must be an array');
+		if (options.nodes.length === 0) return console.log('[FerraLink] => FerralinkOptions.nodes must contain at least one node');
+		if (!options.shoukakuoptions) return console.log('[FerraLink] => FerralinkOptions must contain a shoukakuoptions property');
+		if (!options.send || typeof options.send !== 'function') return console.log('[FerraLink] => FerralinkOptions.send must be a function');
+		if (options.spotify !== null) {
+			if (!options.spotify.ClientID || !options.spotify.ClientSecret) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientID/ClientSecret');
+			this.spotify = new Spotify(options.spotify);
 		}
+		this.shoukaku = new Shoukaku(connector, options.nodes, options.shoukakuoptions);
+		this.players = new Map();
+		this.defaultSearchEngine = options?.defaultSearchEngine || 'youtube';
 	}
 
 	/**
@@ -38,7 +37,7 @@ class FerraLink extends EventEmitter {
 		if (existing) return existing;
 
 		const node = this.shoukaku.getNode();
-		if (!node) return console.log('[FerraLink] => No nodes are existing.');
+		if (node === null) return console.log('[FerraLink] => No nodes are existing.');
 
 		const ShoukakuPlayer = await node.joinChannel({
 			guildId: options.guildId,
@@ -47,7 +46,6 @@ class FerraLink extends EventEmitter {
 			deaf: options.deaf || true
 		});
 		const FerraLinkPlayer = new Player(this, {
-			client: this.client,
 			guildId: options.guildId,
 			voiceId: options.voiceId,
 			textId: options.textId,
@@ -81,22 +79,23 @@ class FerraLink extends EventEmitter {
 	 * @param {FerraLinkSearchOptions} options
 	 * @returns {Promise<shoukaku.LavalinkResponse>}
 	 */
-	async search(query, options) {
-		const regex = /^https?:\/\//;
-		if (regex.test(query)) {
-			if (this.spotify.check(query)) return await this.spotify.resolve(query);
-			return await this.shoukaku.getNode('auto')?.rest.resolve(query);
-		} else {
-			switch (options.engine) {
-				case 'spsearch': {
-					return this.spotify.search(query);
-				}
-				default: {
-					const source = options?.engine || 'ytsearch';
-					return await this.shoukaku.getNode('auto')?.rest.resolve(`${source}:${query}`);
-				}
-			}
+	async search(query, engine = this.defaultSearchEngine) {
+		if (query.startsWith('https://') && query.startsWith('http://')) {
+			if (engine === 'FerralinkSpotify') {
+				if (this.spotify.check(query)) return await this.spotify.resolve(query);
+				return await this.shoukaku.getNode()?.rest.resolve(query);
+			} else return await this.shoukaku.getNode()?.rest.resolve(query);
 		}
+		if (engine === 'FerralinkSpotify') return this.spotify.search(query);
+		const engineMap = {
+			youtube: 'ytsearch',
+			youtubemusic: 'ytmsearch',
+			soundcloud: 'scsearch',
+			spotify: 'spsearch',
+			dezzer: "dzsearch",
+			yandex: 'ymsearch'
+		};
+		return await this.shoukaku.getNode()?.rest.resolve(`${engineMap[engine]}:${query}`);
 	}
 
 	/**

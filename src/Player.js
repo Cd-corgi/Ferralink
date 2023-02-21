@@ -12,9 +12,6 @@ class Player {
 		/** @type {FerraLink} */
 		this.manager = manager;
 		
-		/** @type {FerraLink.client} */
-		this.client = options.client;
-		
 		/** @type {string} */
 		this.guildId = options.guildId;
 
@@ -167,36 +164,37 @@ class Player {
 	 * @param {FerraLink.FerraLinkSearchOptions} options
 	 * @returns {Promise<shoukaku.LavalinkResponse>}
 	 */
-	async search(query, options) {
-		const regex = /^https?:\/\//;
-		if (regex.test(query)) {
-			if (this.manager.spotify.check(query)) return await this.manager.spotify.resolve(query);
-			return await this.shoukaku.node.rest.resolve(query);
-		} else {
-			switch (options.engine) {
-				case 'spsearch': {
-					return this.manager.spotify.search(query);
-				}
-				default: {
-					const source = options?.engine || 'ytsearch';
-					return await this.shoukaku.node.rest.resolve(`${source}:${query}`);
-				}
-			}
+	async search(query, engine = this.manager.defaultSearchEngine) {
+		if (query.startsWith('https://') && query.startsWith('http://')) {
+			if (engine === 'FerralinkSpotify') {
+				if (this.manager.spotify.check(query)) return await this.manager.spotify.resolve(query);
+				return await this.shoukaku.node.rest.resolve(query);
+			} else return await this.shoukaku.node.rest.resolve(query);
 		}
+		if (engine === 'FerralinkSpotify') return await this.manager.spotify.search(query);
+		const engineMap = {
+			youtube: 'ytsearch',
+			youtubemusic: 'ytmsearch',
+			soundcloud: 'scsearch',
+			spotify: 'spsearch',
+			dezzer: "dzsearch",
+			yandex: 'ymsearch'
+		};
+		return await this.shoukaku.node.rest.resolve(`${engineMap[engine]}:${query}`);
 	}
 
 	/**
 	 * Play the queue
 	 * @returns {Promise<void>}
 	 */
-	async play(options = { noReplace: false }) {
+	async play() {
 		if (!this.queue.length) return;
 		this.queue.current = this.queue.shift();
 		try {
 			if (!this.queue.current.track) this.queue.current = await this.manager.resolve(this.queue.current, this.shoukaku.node);
 			this.shoukaku
 				.setVolume(this.volume / 100)
-				.playTrack({ track: this.queue.current.track, options });
+				.playTrack({ track: this.queue.current.track });
 		} catch (e) {
 			this.manager.emit('trackError', this, this.queue.current, e);
 		}
@@ -208,17 +206,15 @@ class Player {
 	 */
 	disconnect() {
 		this.pause(true);
-		const data = {
+		this.manager.options.send(this.guildId, {
 		    op: 4,
 		    d: {
 			  guild_id: this.guildId,
 			  channel_id: null,
 			  self_mute: false,
 			  self_deaf: false,
-		      },
-		};
-		const guild = this.client.guilds.cache.get(this.guildId);
-		if (guild) guild.shard.send(data);
+		    },
+		});
 		this.voiceId = null;
 		return this;
 	}
