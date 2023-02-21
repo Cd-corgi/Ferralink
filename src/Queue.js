@@ -47,7 +47,8 @@ class Queue extends Array {
 	 * @param {shoukaku.Track} track
 	 * @returns {Queue}
 	 */
-	add(track) {
+	add(track, options) {
+		track.info.requester = options?.requester || null;
 		this.push(track);
 		return this;
 	}
