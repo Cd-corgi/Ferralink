@@ -38,7 +38,9 @@ class FerraLink extends EventEmitter {
 		const existing = this.players.get(options.guildId);
 		if (existing) return existing;
 
-		const node = this.shoukaku.getNode();
+		let node;
+		if (options.loadBalancer === true) node = this.getLeastUsedNode();
+		node = this.shoukaku.getNode();
 		if (node === null) return console.log('[FerraLink] => No nodes are existing.');
 
 		const ShoukakuPlayer = await node.joinChannel({
@@ -58,6 +60,14 @@ class FerraLink extends EventEmitter {
 		this.emit('PlayerCreate', FerraLinkPlayer);
 		return FerraLinkPlayer;
 	}
+	
+	getLeastUsedNode() {
+		const nodes = [...this.shoukaku.nodes.values()];
+		const onlineNodes = nodes.filter((node) => node);
+		if (!onlineNodes.length) return console.log("[FerraLink] => No nodes are online.")
+		return onlineNodes.reduce((a, b) => (a.players.size < b.players.size ? a : b));
+	}
+
 	
 	/**
          * Resolve a track
