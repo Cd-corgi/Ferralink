@@ -24,9 +24,6 @@ class Player {
 		/** @type {number} */
 		this.volume = options.volume;
 
-		/** @type {requester} */
-		this.requester = null;
-
 		/** @type {shoukaku.Player} */
 		this.shoukaku = options.ShoukakuPlayer;
 
@@ -160,18 +157,7 @@ class Player {
 		this.loop = 'none';
 		return this;
 	}
-
-	/**
-	 * Change player's voice channel
-	 * @param {Object} requester
-	 * @returns {Player}
-	 */
-	setRequester(user) {
-		if (!user) throw new Error('[FerraLink] => You must have to provide user object');
-		this.requester = user;
-		return this;
-	}
-
+	
 	/**
 	 * Search a song in Lavalink providers.
 	 * @param {string} query
