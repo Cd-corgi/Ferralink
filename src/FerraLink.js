@@ -97,7 +97,7 @@ class FerraLink extends EventEmitter {
 			youtubemusic: 'ytmsearch',
 			soundcloud: 'scsearch',
 			spotify: 'spsearch',
-			dezzer: "dzsearch",
+			deezer: "dzsearch",
 			yandex: 'ymsearch'
 		};
 		return await this.shoukaku.getNode()?.rest.resolve(`${engineMap[engine]}:${query}`);
