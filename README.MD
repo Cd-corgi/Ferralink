@@ -71,7 +71,7 @@ client.FerraLink = new FerraLink({
         ClientID: "Your spotify clientId here",
         ClientSecret: "Your spotify clientSecret here"
     },
-    defaultSearchEngine: "FerralinkSpotify || youtube || youtubemusic || soundcloud || spotify",
+    defaultSearchEngine: "FerralinkSpotify || youtube || youtubemusic || soundcloud || spotify || deezer",
     send: (guildId, payload) => {
         const guild = client.guilds.cache.get(guildId);
         if (guild) guild.shard.send(payload);
@@ -97,11 +97,13 @@ if (loadType === "NO_MATCHES" || !tracks.length) return;
 
 if (loadType === "PLAYLIST_LOADED") {
     for (const track of tracks) {
+        player.setRequester(message.author);
         player.queue.add(track);
     }
     if (!player.playing && !player.paused) await player.play();
     message.channel.send({ content: `Added ${player.queue.length} tracks from ${playlistInfo.name}` });
 } else if (loadType === "SEARCH_RESULT" || loadType === "TRACK_LOADED") {
+    player.setRequester(message.author);
     player.queue.add(tracks[0]);
     if (!player.playing && !player.paused) await player.play();
     message.channel.send({ content: `Queued ${tracks[0].info.title}` });
