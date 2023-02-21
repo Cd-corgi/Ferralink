@@ -18,12 +18,14 @@ class FerraLink extends EventEmitter {
 		if (options.nodes.length === 0) return console.log('[FerraLink] => FerralinkOptions.nodes must contain at least one node');
 		if (!options.shoukakuoptions) return console.log('[FerraLink] => FerralinkOptions must contain a shoukakuoptions property');
 		if (!options.send || typeof options.send !== 'function') return console.log('[FerraLink] => FerralinkOptions.send must be a function');
-		if (options.spotify !== null) {
-			if (!options.spotify.ClientID || !options.spotify.ClientSecret) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientID/ClientSecret');
+		if (options?.spotify) {
+			if (!options.spotify.ClientSecret) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientID');
+			if (!options.spotify.ClientSecret) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientSecret');
 			this.spotify = new Spotify(options.spotify);
 		}
 		this.shoukaku = new Shoukaku(connector, options.nodes, options.shoukakuoptions);
 		this.players = new Map();
+		this.sendWs = options?.send || null;
 		this.defaultSearchEngine = options?.defaultSearchEngine || 'youtube';
 	}
 
@@ -79,14 +81,17 @@ class FerraLink extends EventEmitter {
 	 * @param {FerraLinkSearchOptions} options
 	 * @returns {Promise<shoukaku.LavalinkResponse>}
 	 */
-	async search(query, engine = this.defaultSearchEngine) {
-		if (query.startsWith('https://') && query.startsWith('http://')) {
+	async search(query, engine = this.manager.defaultSearchEngine) {
+		if (/^https?:\/\//.test(query)) {
 			if (engine === 'FerralinkSpotify') {
-				if (this.spotify.check(query)) return await this.spotify.resolve(query);
+				if (this.manager.spotify.check(query)) {
+				    return await this.spotify.resolve(query);
+				}
 				return await this.shoukaku.getNode()?.rest.resolve(query);
-			} else return await this.shoukaku.getNode()?.rest.resolve(query);
+			}
+			return await this.shoukaku.getNode()?.rest.resolve(query);
 		}
-		if (engine === 'FerralinkSpotify') return this.spotify.search(query);
+		if (engine === 'FerralinkSpotify') return await this.manager.spotify.search(query);
 		const engineMap = {
 			youtube: 'ytsearch',
 			youtubemusic: 'ytmsearch',

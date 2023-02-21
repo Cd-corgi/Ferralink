@@ -20,6 +20,12 @@ class Queue extends Array {
 		return this.length + (this.current ? 1 : 0);
 	}
 
+	/** @type {shoukaku.Track|null|undefined} */
+	current = null;
+
+	/** @type {shoukaku.Track|null|undefined} */
+	previous = null;
+
 	/**
 	 * Check if the queue is empty
 	 * @returns {boolean}
@@ -35,12 +41,6 @@ class Queue extends Array {
 	get durationLength() {
 		return this.reduce((acc, cur) => acc + (cur.length || 0), 0);
 	}
-
-	/** @type {shoukaku.Track|null|undefined} */
-	current = null;
-
-	/** @type {shoukaku.Track|null|undefined} */
-	previous = null;
 
 	/**
 	 * Add a track to the queue

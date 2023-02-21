@@ -24,6 +24,9 @@ class Player {
 		/** @type {number} */
 		this.volume = options.volume;
 
+		/** @type {requester} */
+		this.requester = null;
+
 		/** @type {shoukaku.Player} */
 		this.shoukaku = options.ShoukakuPlayer;
 
@@ -159,17 +162,31 @@ class Player {
 	}
 
 	/**
+	 * Change player's voice channel
+	 * @param {Object} requester
+	 * @returns {Player}
+	 */
+	setRequester(user) {
+		if (!user) throw new Error('[FerraLink] => You must have to provide user object');
+		this.requester = user;
+		return this;
+	}
+
+	/**
 	 * Search a song in Lavalink providers.
 	 * @param {string} query
 	 * @param {FerraLink.FerraLinkSearchOptions} options
 	 * @returns {Promise<shoukaku.LavalinkResponse>}
 	 */
-	async search(query, engine = this.manager.defaultSearchEngine) {
-		if (query.startsWith('https://') && query.startsWith('http://')) {
+	async search(query, user, engine = this.manager.defaultSearchEngine) {
+		if (/^https?:\/\//.test(query)) {
 			if (engine === 'FerralinkSpotify') {
-				if (this.manager.spotify.check(query)) return await this.manager.spotify.resolve(query);
+				if (this.manager.spotify.check(query)) {
+				    return await this.manager.spotify.resolve(query);
+				}
 				return await this.shoukaku.node.rest.resolve(query);
-			} else return await this.shoukaku.node.rest.resolve(query);
+			}
+			return await this.shoukaku.node.rest.resolve(query);
 		}
 		if (engine === 'FerralinkSpotify') return await this.manager.spotify.search(query);
 		const engineMap = {
@@ -206,15 +223,15 @@ class Player {
 	 */
 	disconnect() {
 		this.pause(true);
-		this.manager.options.send(this.guildId, {
-		    op: 4,
-		    d: {
-			  guild_id: this.guildId,
-			  channel_id: null,
-			  self_mute: false,
-			  self_deaf: false,
-		    },
-		});
+        this.manager.sendWs(this.guild, {
+            op: 4,
+            d: {
+                guild_id: this.guild,
+                channel_id: null,
+                self_mute: false,
+                self_deaf: false,
+            },
+        });
 		this.voiceId = null;
 		return this;
 	}
