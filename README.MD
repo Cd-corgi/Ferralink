@@ -52,26 +52,31 @@ const client = new Client({
     ],
 });
 
-const Nodes = [{
-    name: "Lavalink",
-    url: "localhost:2333",
-    auth: "youshallpass",
-    secure: false
-}];
-
-const ShoukakuOptions = {
-    moveOnDisconnect: false,
-    resumable: false,
-    resumableTimeout: 60,
-    reconnectTries: 10,
-    restTimeout: 60000
-};
 
 client.FerraLink = new FerraLink({
-    BotClient: client,
-    ClientID: "Your spotify clientId here",
-    ClientSecret: "Your spotify clientSecret here"
-}, new Connectors.DiscordJS(client), Nodes, ShoukakuOptions);
+    nodes: [{
+      name: "Lavalink",
+      url: "localhost:2333",
+      auth: "youshallpass",
+      secure: false
+    }],
+    shoukakuoptions: {
+        moveOnDisconnect: false,
+        resumable: false,
+        resumableTimeout: 60,
+        reconnectTries: 10,
+        restTimeout: 60000
+    },
+    spotify: {
+        ClientID: "Your spotify clientId here",
+        ClientSecret: "Your spotify clientSecret here"
+    },
+    defaultSearchEngine: "FerralinkSpotify",
+    send: (guildId, payload) => {
+        const guild = client.guilds.cache.get(guildId);
+        if (guild) guild.shard.send(payload);
+    }
+}, new Connectors.DiscordJS(client));
 ```
 
 ## A small example to create play command.
@@ -85,7 +90,7 @@ const player = await client.FerraLink.createPlayer({
     deaf: true,
 });
 
-const resolve = await player.search(args.join(" "), { engine: "spsearch" }); // spsearch is work for search spotify tracks.
+const resolve = await player.search(args.join(" ")); // spsearch is work for search spotify tracks.
 const { loadType, tracks, playlistInfo } = resolve;
 
 if (loadType === "NO_MATCHES" || !tracks.length) return;
