@@ -164,9 +164,9 @@ class Player {
 	 * @param {FerraLink.FerraLinkSearchOptions} options
 	 * @returns {Promise<shoukaku.LavalinkResponse>}
 	 */
-	async search(query, user, engine = this.manager.defaultSearchEngine) {
+	async search(query, options = { engine: this.manager.defaultSearchEngine }) {
 		if (/^https?:\/\//.test(query)) {
-			if (engine === 'FerralinkSpotify') {
+			if (options.engine === 'FerralinkSpotify') {
 				if (this.manager.spotify.check(query)) {
 				    return await this.manager.spotify.resolve(query);
 				}
@@ -174,7 +174,7 @@ class Player {
 			}
 			return await this.shoukaku.node.rest.resolve(query);
 		}
-		if (engine === 'FerralinkSpotify') return await this.manager.spotify.search(query);
+		if (options.engine === 'FerralinkSpotify') return await this.manager.spotify.search(query);
 		const engineMap = {
 			youtube: 'ytsearch',
 			youtubemusic: 'ytmsearch',
@@ -183,7 +183,7 @@ class Player {
 			deezer: "dzsearch",
 			yandex: 'ymsearch'
 		};
-		return await this.shoukaku.node.rest.resolve(`${engineMap[engine]}:${query}`);
+		return await this.shoukaku.node.rest.resolve(`${engineMap[options.engine]}:${query}`);
 	}
 
 	/**
