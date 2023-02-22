@@ -23,6 +23,7 @@ A Simple but powerful Lavalink Client for your JavaScript Discord Bot!
 
 # 📂 Implementation
 - A [example bot](https://github.com/vkamsingh/Ferralink-Example) as guide for beginners.
+- If you have any issues, please join our [support server](https://discord.gg/8n3yNqtPAE).
 
 # 📦 How to Install FerraLink
 
@@ -67,10 +68,10 @@ client.FerraLink = new FerraLink({
         reconnectTries: 10,
         restTimeout: 60000
     },
-    spotify: {
+    spotify: [{
         ClientID: "Your spotify clientId here",
         ClientSecret: "Your spotify clientSecret here"
-    },
+    }],
     defaultSearchEngine: "FerralinkSpotify || youtube || youtubemusic || soundcloud || spotify || deezer",
     send: (guildId, payload) => {
         const guild = client.guilds.cache.get(guildId);
@@ -97,12 +98,12 @@ if (loadType === "NO_MATCHES" || !tracks.length) return;
 
 if (loadType === "PLAYLIST_LOADED") {
     for (const track of tracks) {
-        player.queue.add(track, { requester: message.author });
+        player.queue.add(track, {requester: message.author});
     }
     if (!player.playing && !player.paused) await player.play();
     message.channel.send({ content: `Added ${player.queue.length} tracks from ${playlistInfo.name}` });
 } else if (loadType === "SEARCH_RESULT" || loadType === "TRACK_LOADED") {
-    player.queue.add(tracks[0], { requester: message.author });
+    player.queue.add(tracks[0], {requester: message.author});
     if (!player.playing && !player.paused) await player.play();
     message.channel.send({ content: `Queued ${tracks[0].info.title}` });
 } else return;
