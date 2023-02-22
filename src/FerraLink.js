@@ -19,9 +19,15 @@ class FerraLink extends EventEmitter {
 		if (!options.shoukakuoptions) return console.log('[FerraLink] => FerralinkOptions must contain a shoukakuoptions property');
 		if (!options.send || typeof options.send !== 'function') return console.log('[FerraLink] => FerralinkOptions.send must be a function');
 		if (options?.spotify) {
-			if (!options.spotify.ClientSecret) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientID');
-			if (!options.spotify.ClientSecret) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientSecret');
-			this.spotify = new Spotify(options.spotify);
+			if (!options.spotify[0]?.ClientID) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientID');
+			if (!options.spotify[0]?.ClientSecret) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientSecret');
+
+			if (options.spotify?.length === 1) {
+				this.spotify = new Spotify({ ClientID: options.spotify[0]?.ClientID, ClientSecret: options.spotify[0]?.ClientSecret });
+			} else {
+				for (const client of options.spotify) { this.spotify = new Spotify(client); }
+				console.warn("[FerraLink Spotify] => You are using the multi client mode, sometimes you can STILL GET RATE LIMITED.");
+			}
 		}
 		this.shoukaku = new Shoukaku(connector, options.nodes, options.shoukakuoptions);
 		this.players = new Map();
