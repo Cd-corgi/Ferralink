@@ -77,10 +77,10 @@ class FerraLink extends EventEmitter {
 
 
 	/**
-		 * Resolve a track
-		 * @param {shoukaku.Track} track
-		 * @returns {Promise<shoukaku.Track>}
-		 */
+	* Resolve a track
+	* @param {shoukaku.Track} track
+	* @returns {Promise<shoukaku.Track>}
+	*/
 	async resolve(track, node) {
 		const query = [track.info.author, track.info.title].filter(x => !!x).join(' - ');
 		let result = await node.rest.resolve(`ytmsearch:${query}`);
