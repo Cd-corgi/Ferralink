@@ -45,8 +45,9 @@ class FerraLink extends EventEmitter {
 		if (existing) return existing;
 
 		let node;
-		if (options.loadBalancer === true) node = this.getLeastUsedNode();
-		node = this.shoukaku.getNode();
+		if (options.loadBalancer === true) {
+			node = this.getLeastUsedNode();
+		} else { node = this.shoukaku.getNode('auto'); }
 		if (node === null) return console.log('[FerraLink] => No nodes are existing.');
 
 		const ShoukakuPlayer = await node.joinChannel({
@@ -66,7 +67,7 @@ class FerraLink extends EventEmitter {
 		this.emit('PlayerCreate', FerraLinkPlayer);
 		return FerraLinkPlayer;
 	}
-	
+
 	getLeastUsedNode() {
 		const nodes = [...this.shoukaku.nodes.values()];
 		const onlineNodes = nodes.filter((node) => node);
@@ -74,12 +75,12 @@ class FerraLink extends EventEmitter {
 		return onlineNodes.reduce((a, b) => (a.players.size < b.players.size ? a : b));
 	}
 
-	
+
 	/**
-         * Resolve a track
-         * @param {shoukaku.Track} track
-         * @returns {Promise<shoukaku.Track>}
-         */
+		 * Resolve a track
+		 * @param {shoukaku.Track} track
+		 * @returns {Promise<shoukaku.Track>}
+		 */
 	async resolve(track, node) {
 		const query = [track.info.author, track.info.title].filter(x => !!x).join(' - ');
 		let result = await node.rest.resolve(`ytmsearch:${query}`);
@@ -101,7 +102,7 @@ class FerraLink extends EventEmitter {
 		if (/^https?:\/\//.test(query)) {
 			if (options.engine === 'FerralinkSpotify') {
 				if (this.manager.spotify.check(query)) {
-				    return await this.spotify.resolve(query);
+					return await this.spotify.resolve(query);
 				}
 				return await this.shoukaku.getNode()?.rest.resolve(query);
 			}
