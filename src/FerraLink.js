@@ -47,7 +47,9 @@ class FerraLink extends EventEmitter {
 		let node;
 		if (options.loadBalancer === true) {
 			node = this.getLeastUsedNode();
-		} else { node = this.shoukaku.getNode('auto'); }
+		} else { 
+			node = this.shoukaku.getNode('auto'); 
+		}
 		if (node === null) return console.log('[FerraLink] => No nodes are existing.');
 
 		const ShoukakuPlayer = await node.joinChannel({
