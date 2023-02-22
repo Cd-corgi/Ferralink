@@ -8,7 +8,7 @@ class Spotify {
 	/**
 	 * @param {FerraLink} manager
 	 */
-	constructor(manager) {
+	constructor(manager = { ClientID: string, ClientSecret: string }) {
 		/** @private */
 		this.manager = manager;
 
