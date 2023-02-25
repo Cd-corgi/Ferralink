@@ -31,7 +31,6 @@ class FerraLink extends EventEmitter {
 		}
 		this.shoukaku = new Shoukaku(connector, options.nodes, options.shoukakuoptions);
 		this.players = new Map();
-		this.sendWs = options?.send || null;
 		this.defaultSearchEngine = options?.defaultSearchEngine || 'youtube';
 	}
 
