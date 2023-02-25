@@ -1,21 +1,22 @@
 export = FerraLink;
 declare class FerraLink {
-    constructor(client: any, nodes: import('shoukaku').NodeOption[], options: FerraLinkOptions);
-    shoukaku: Shoukaku;
-    players: Map<string, Player>;
+    constructor(options: FerraLinkOptions, connector: import("shoukaku").Connector);
     spotify: Spotify | undefined;
+    shoukaku: Shoukaku | undefined;
+    players: Map<any, any> | undefined;
+    defaultSearchEngine: "ytsearch" | "ytmsearch" | "spsearch" | "scsearch" | undefined;
     createPlayer(options: FerraLinkCreatePlayerOptions): Promise<Player>;
-    getNode(): import('shoukaku').Node;
-    search(query: string, options: FerraLinkSearchOptions): Promise<shoukaku.LavalinkResponse>;
+    getLeastUsedNode(): any;
+    resolve(track: shoukaku.Track, node: any): Promise<shoukaku.Track>;
+    search(query: string, options?: FerraLinkSearchOptions): Promise<shoukaku.LavalinkResponse>;
     on<K extends keyof FerraLinkEvents>(event: K, listener: (...args: FerraLinkEvents[K]) => any): FerraLink;
     once<K_1 extends keyof FerraLinkEvents>(event: K_1, listener: (...args: FerraLinkEvents[K_1]) => any): FerraLink;
 }
 declare namespace FerraLink {
-    export { FerraLinkOptions, FerraLinkSpotifyOptions, FerraLinkCreatePlayerOptions, FerraLinkSearchOptions, FerraLinkEvents };
+    export { FerraLinkOptions, FerraLinkCreatePlayerOptions, FerraLinkSearchOptions, FerraLinkEvents };
 }
-import { Shoukaku } from "shoukaku/dist/src/Shoukaku";
-import Player = require("./Player");
 import Spotify = require("./module/Spotify");
+import { Shoukaku } from "shoukaku/dist/src/Shoukaku";
 type FerraLinkCreatePlayerOptions = {
     guildId: string;
     voiceId: string;
@@ -24,30 +25,28 @@ type FerraLinkCreatePlayerOptions = {
     volume?: number | undefined;
     deaf?: boolean | undefined;
 };
+import Player = require("./Player");
 type FerraLinkSearchOptions = {
-    engine?: "spsearch" | "ytsearch" | "ytmsearch" | "scsearch" | undefined;
+    engine?: "ytsearch" | "ytmsearch" | "spsearch" | "scsearch" | undefined;
 };
-import shoukaku = require("shoukaku");
 type FerraLinkEvents = {
     trackStart: [player: Player, track: shoukaku.Track];
     trackEnd: [player: Player, track: shoukaku.Track];
     queueEnd: [player: Player];
-    PlayerClosed: [player: Player, data: shoukaku.WebSocketClosedEvent];
+    playerClosed: [player: Player, data: shoukaku.WebSocketClosedEvent];
     trackException: [player: Player, data: shoukaku.TrackExceptionEvent];
-    PlayerUpdate: [player: Player, data: shoukaku.PlayerUpdate];
+    playerUpdate: [player: Player, data: shoukaku.PlayerUpdate];
     trackStuck: [player: Player, data: shoukaku.TrackStuckEvent];
-    PlayerResumed: [player: Player];
+    playerResumed: [player: Player];
     playerDestroy: [player: Player];
     playerCreate: [player: Player];
 };
 type FerraLinkOptions = {
-    spotify?: FerraLinkSpotifyOptions | undefined;
-};
-type FerraLinkSpotifyOptions = {
-    playlistLimit: number;
-    albumLimit: number;
-    artistLimit: number;
-    searchMarket: string;
-    clientID: string;
-    clientSecret: string;
+    nodes: import("shoukaku").NodeOption[];
+    shoukakuoptions: import("shoukaku").ShoukakuOptions;
+    spotify: Array<{
+        ClientID: string;
+        ClientSecret: string;
+    }>;
+    defaultSearchEngine: 'ytsearch' | 'ytmsearch' | 'spsearch' | 'scsearch';
 };

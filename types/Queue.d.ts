@@ -5,11 +5,11 @@ declare class Queue extends Array<shoukaku.Track> {
     constructor(...items: shoukaku.Track[]);
     get size(): number;
     get totalSize(): number;
-    get isEmpty(): boolean;
-    get durationLength(): number;
     current: shoukaku.Track | null | undefined;
     previous: shoukaku.Track | null | undefined;
-    add(track: shoukaku.Track): Queue;
+    get isEmpty(): boolean;
+    get durationLength(): number;
+    add(track: shoukaku.Track, options: any): Queue;
     remove(index: number): Queue;
     clear(): Queue;
     shuffle(): void;

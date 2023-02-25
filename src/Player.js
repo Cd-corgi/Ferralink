@@ -11,7 +11,7 @@ class Player {
 	constructor(manager, options) {
 		/** @type {FerraLink} */
 		this.manager = manager;
-		
+
 		/** @type {string} */
 		this.guildId = options.guildId;
 
@@ -64,15 +64,16 @@ class Player {
 		});
 		this.shoukaku.on('closed', (data = WebSocketClosedEvent) => {
 			this.playing = false;
-			this.manager.emit('PlayerClosed', this, data);
+			this.manager.emit('playerClosed', this, data);
 		});
 		this.shoukaku.on('exception', (data = TrackExceptionEvent) => {
 			this.playing = false;
 			this.manager.emit('trackException', this, data);
 		});
-		this.shoukaku.on('update', (data = PlayerUpdate) => this.manager.emit('PlayerUpdate', this, data));
+
+		this.shoukaku.on('update', (data = PlayerUpdate) => this.manager.emit('playerUpdate', this, data));
 		this.shoukaku.on('stuck', (data = TrackStuckEvent) => this.manager.emit('trackStuck', this, data));
-		this.shoukaku.on('resumed', () => this.manager.emit('PlayerResumed', this));
+		this.shoukaku.on('resumed', () => this.manager.emit('playerResumed', this));
 	}
 
 	/**
@@ -157,7 +158,7 @@ class Player {
 		this.loop = 'none';
 		return this;
 	}
-	
+
 	/**
 	 * Search a song in Lavalink providers.
 	 * @param {string} query
@@ -166,24 +167,17 @@ class Player {
 	 */
 	async search(query, options = { engine: this.manager.defaultSearchEngine }) {
 		if (/^https?:\/\//.test(query)) {
-			if (options.engine === 'FerralinkSpotify') {
+			if (options.engine === 'spsearch') {
 				if (this.manager.spotify.check(query)) {
-				    return await this.manager.spotify.resolve(query);
+					return await this.manager.spotify.resolve(query);
 				}
 				return await this.shoukaku.node.rest.resolve(query);
 			}
 			return await this.shoukaku.node.rest.resolve(query);
 		}
-		if (options.engine === 'FerralinkSpotify') return await this.manager.spotify.search(query);
-		const engineMap = {
-			youtube: 'ytsearch',
-			youtubemusic: 'ytmsearch',
-			soundcloud: 'scsearch',
-			spotify: 'spsearch',
-			deezer: "dzsearch",
-			yandex: 'ymsearch'
-		};
-		return await this.shoukaku.node.rest.resolve(`${engineMap[options.engine]}:${query}`);
+		if (options.engine === 'spsearch') return await this.manager.spotify.search(query);
+
+		return await this.shoukaku.node.rest.resolve(`${options.engine}:${query}`);
 	}
 
 	/**
@@ -210,18 +204,18 @@ class Player {
 	disconnect() {
 		this.pause(true);
 		const data = {
-            op: 4,
-            d: {
-                guild_id: this.guildId,
-                channel_id: null,
-                self_mute: false,
-                self_deaf: false,
-            },
-        };
-        const guild = this.manager.shoukaku.connector.client.guilds.cache.get(this.guildId);
-        if (guild) guild.shard.send(data);
-        this.voiceId = null;
-        return this;
+			op: 4,
+			d: {
+				guild_id: this.guildId,
+				channel_id: null,
+				self_mute: false,
+				self_deaf: false,
+			},
+		};
+		const guild = this.manager.shoukaku.connector.client.guilds.cache.get(this.guildId);
+		if (guild) guild.shard.send(data);
+		this.voiceId = null;
+		return this;
 	}
 
 	/**
@@ -233,7 +227,7 @@ class Player {
 		this.shoukaku.connection.disconnect();
 		this.shoukaku.removeAllListeners();
 		this.manager.players.delete(this.guildId);
-		this.manager.emit('PlayerDestroy', this);
+		this.manager.emit('playerDestroy', this);
 	}
 }
 
