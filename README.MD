@@ -73,10 +73,6 @@ client.FerraLink = new FerraLink({
         ClientSecret: "Your spotify clientSecret here"
     }],
     defaultSearchEngine: "FerralinkSpotify || youtube || youtubemusic || soundcloud || spotify || deezer",
-    send: (guildId, payload) => {
-        const guild = client.guilds.cache.get(guildId);
-        if (guild) guild.shard.send(payload);
-    }
 }, new Connectors.DiscordJS(client));
 ```
 
