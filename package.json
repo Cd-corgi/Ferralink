@@ -1,6 +1,6 @@
 {
 	"name": "ferra-link",
-	"version": "0.4.5",
+	"version": "0.4.6",
 	"description": "A power lavalink wrapper for nodeJS made with shoukaku.",
 	"main": "./src/index.js",
 	"types": "./types/index.d.ts",
