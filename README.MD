@@ -94,12 +94,12 @@ if (loadType === "NO_MATCHES" || !tracks.length) return;
 
 if (loadType === "PLAYLIST_LOADED") {
     for (const track of tracks) {
-        player.queue.add(track, {requester: message.author});
+        player.queue.add(track, { requester: message.author });
     }
     if (!player.playing && !player.paused) await player.play();
     message.channel.send({ content: `Added ${player.queue.length} tracks from ${playlistInfo.name}` });
 } else if (loadType === "SEARCH_RESULT" || loadType === "TRACK_LOADED") {
-    player.queue.add(tracks[0], {requester: message.author});
+    player.queue.add(tracks[0], { requester: message.author });
     if (!player.playing && !player.paused) await player.play();
     message.channel.send({ content: `Queued ${tracks[0].info.title}` });
 } else return;
