@@ -4,7 +4,7 @@ declare class FerraLink {
     spotify: Spotify | undefined;
     shoukaku: Shoukaku | undefined;
     players: Map<any, any> | undefined;
-    defaultSearchEngine: "ytsearch" | "ytmsearch" | "spsearch" | "scsearch" | undefined;
+    private defaultSearchEngine: "ytsearch" | "ytmsearch" | "spsearch" | "scsearch" | undefined;
     createPlayer(options: FerraLinkCreatePlayerOptions): Promise<Player>;
     getLeastUsedNode(): any;
     resolve(track: shoukaku.Track, node: any): Promise<shoukaku.Track>;

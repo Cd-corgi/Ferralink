@@ -72,7 +72,7 @@ client.FerraLink = new FerraLink({
         ClientID: "Your spotify clientId here",
         ClientSecret: "Your spotify clientSecret here"
     }],
-    defaultSearchEngine: "FerralinkSpotify || youtube || youtubemusic || soundcloud || spotify || deezer",
+    defaultSearchEngine: "ytsearch" //Avaible engines: 'ytsearch', 'ytmsearch', 'spsearch', 'scsearch',
 }, new Connectors.DiscordJS(client));
 ```
 
@@ -93,9 +93,8 @@ const { loadType, tracks, playlistInfo } = resolve;
 if (loadType === "NO_MATCHES" || !tracks.length) return;
 
 if (loadType === "PLAYLIST_LOADED") {
-    for (const track of tracks) {
-        player.queue.add(track, { requester: message.author });
-    }
+    for (const track of tracks) player.queue.add(track, { requester: message.author });
+    
     if (!player.playing && !player.paused) await player.play();
     message.channel.send({ content: `Added ${player.queue.length} tracks from ${playlistInfo.name}` });
 } else if (loadType === "SEARCH_RESULT" || loadType === "TRACK_LOADED") {
