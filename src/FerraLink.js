@@ -145,10 +145,16 @@ module.exports = FerraLink;
 
 /**
  * @typedef FerraLinkOptions
- * @property {import("shoukaku").NodeOption[]} nodes
+ * @property {Array<import("shoukaku").NodeOption>} nodes
  * @property {import("shoukaku").ShoukakuOptions} shoukakuoptions
- * @property {Array<{ ClientID: string, ClientSecret: string }>} spotify
+ * @property {Array<FerraLinkSpotifySettings>} spotify
  * @property {'ytsearch' | 'ytmsearch' | 'spsearch' | 'scsearch'} defaultSearchEngine
+ */
+
+/**
+ * @typedef FerraLinkSpotifySettings
+ * @property {string} ClientID
+ * @property {string} ClientSecret
  */
 
 /**

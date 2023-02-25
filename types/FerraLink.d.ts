@@ -13,7 +13,7 @@ declare class FerraLink {
     once<K_1 extends keyof FerraLinkEvents>(event: K_1, listener: (...args: FerraLinkEvents[K_1]) => any): FerraLink;
 }
 declare namespace FerraLink {
-    export { FerraLinkOptions, FerraLinkCreatePlayerOptions, FerraLinkSearchOptions, FerraLinkEvents };
+    export { FerraLinkOptions, FerraLinkSpotifySettings, FerraLinkCreatePlayerOptions, FerraLinkSearchOptions, FerraLinkEvents };
 }
 import Spotify = require("./module/Spotify");
 import { Shoukaku } from "shoukaku/dist/src/Shoukaku";
@@ -42,11 +42,12 @@ type FerraLinkEvents = {
     playerCreate: [player: Player];
 };
 type FerraLinkOptions = {
-    nodes: import("shoukaku").NodeOption[];
+    nodes: Array<import("shoukaku").NodeOption>;
     shoukakuoptions: import("shoukaku").ShoukakuOptions;
-    spotify: Array<{
-        ClientID: string;
-        ClientSecret: string;
-    }>;
+    spotify: Array<FerraLinkSpotifySettings>;
     defaultSearchEngine: 'ytsearch' | 'ytmsearch' | 'spsearch' | 'scsearch';
+};
+type FerraLinkSpotifySettings = {
+    ClientID: string;
+    ClientSecret: string;
 };
