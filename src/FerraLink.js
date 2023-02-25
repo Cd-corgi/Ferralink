@@ -17,7 +17,6 @@ class FerraLink extends EventEmitter {
 		if (!Array.isArray(options.nodes)) return console.log('[FerraLink] => FerralinkOptions.nodes must be an array');
 		if (options.nodes.length === 0) return console.log('[FerraLink] => FerralinkOptions.nodes must contain at least one node');
 		if (!options.shoukakuoptions) return console.log('[FerraLink] => FerralinkOptions must contain a shoukakuoptions property');
-		if (!options.send || typeof options.send !== 'function') return console.log('[FerraLink] => FerralinkOptions.send must be a function');
 		if (options?.spotify) {
 			if (!options.spotify[0]?.ClientID) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientID');
 			if (!options.spotify[0]?.ClientSecret) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientSecret');

@@ -209,17 +209,19 @@ class Player {
 	 */
 	disconnect() {
 		this.pause(true);
-        this.manager.sendWs(this.guild, {
+		const data = {
             op: 4,
             d: {
-                guild_id: this.guild,
+                guild_id: this.guildId,
                 channel_id: null,
                 self_mute: false,
                 self_deaf: false,
             },
-        });
-		this.voiceId = null;
-		return this;
+        };
+        const guild = this.manager.shoukaku.connector.client.guilds.cache.get(this.guildId);
+        if (guild) guild.shard.send(data);
+        this.voiceId = null;
+        return this;
 	}
 
 	/**
