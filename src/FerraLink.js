@@ -101,14 +101,14 @@ class FerraLink extends EventEmitter {
 	async search(query, options = { engine: this.defaultSearchEngine }) {
 		if (/^https?:\/\//.test(query)) {
 			if (options.engine === 'FerralinkSpotify') {
-				if (this.manager.spotify.check(query)) {
+				if (this.spotify.check(query)) {
 					return await this.spotify.resolve(query);
 				}
 				return await this.shoukaku.getNode()?.rest.resolve(query);
 			}
 			return await this.shoukaku.getNode()?.rest.resolve(query);
 		}
-		if (options.engine === 'FerralinkSpotify') return await this.manager.spotify.search(query);
+		if (options.engine === 'FerralinkSpotify') return await this.spotify.search(query);
 		const engineMap = {
 			youtube: 'ytsearch',
 			youtubemusic: 'ytmsearch',
