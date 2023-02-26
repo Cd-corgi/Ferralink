@@ -72,7 +72,7 @@ client.FerraLink = new FerraLink({
         ClientID: "Your spotify clientId here",
         ClientSecret: "Your spotify clientSecret here"
     }],
-    defaultSearchEngine: "FerralinkSpotify || youtube || youtubemusic || soundcloud || spotify || deezer",
+    defaultSearchEngine: "ytsearch" //Avaible engines: 'ytsearch', 'ytmsearch', 'spsearch', 'scsearch',
 }, new Connectors.DiscordJS(client));
 ```
 
@@ -93,9 +93,8 @@ const { loadType, tracks, playlistInfo } = resolve;
 if (loadType === "NO_MATCHES" || !tracks.length) return;
 
 if (loadType === "PLAYLIST_LOADED") {
-    for (const track of tracks) {
-        player.queue.add(track, { requester: message.author });
-    }
+    for (const track of tracks) player.queue.add(track, { requester: message.author });
+    
     if (!player.playing && !player.paused) await player.play();
     message.channel.send({ content: `Added ${player.queue.length} tracks from ${playlistInfo.name}` });
 } else if (loadType === "SEARCH_RESULT" || loadType === "TRACK_LOADED") {
@@ -131,14 +130,14 @@ if (loadType === "PLAYLIST_LOADED") {
 |   trackStart	    | player, track   | Event of the track start.     |
 |   trackEnd        | player, track	  | Event of the track end.       |
 |   queueEnd        | player          | Event of the queue end.	      |
-|   PlayerClosed    | player, data    | Event of the player close.	  |
+|   playerClosed    | player, data    | Event of the player close.	  |
 |   trackException  | player, data	  | Event of the track exception. |
-|   PlayerUpdate    | player, data	  | Event of the player update.   |
+|   playerUpdate    | player, data	  | Event of the player update.   |
 |   trackStuck      | player, data	  | Event of the track stuck.     |
 |   trackError      | player, error   | Event of the track error.     |
-|   PlayerResumed   | player          | Event of the player resumed.  |
-|   PlayerDestroy   | player	        | Event of the player destroyed.|
-|   PlayerCreate    | player	        | Event of the player create.   |
+|   playerResumed   | player          | Event of the player resumed.  |
+|   playerDestroy   | player	        | Event of the player destroyed.|
+|   playerCreate    | player	        | Event of the player create.   |
 </center>
 
 ## Contributors

@@ -19,9 +19,8 @@ declare class Player {
     setTextChannel(textId: string): Player;
     setVoiceChannel(voiceId: string): Player;
     setLoop(method: LoopType): Player;
-    search(query: string, options: FerraLink.FerraLinkSearchOptions): Promise<shoukaku.LavalinkResponse>;
+    search(query: string, options?: FerraLink.FerraLinkSearchOptions): Promise<shoukaku.LavalinkResponse>;
     play(): Promise<void>;
-    resolve(track: shoukaku.Track): Promise<shoukaku.Track>;
     disconnect(): void;
     destroy(): void;
 }

@@ -1,6 +1,6 @@
 export = Spotify;
 declare class Spotify {
-    constructor(manager: FerraLink);
+    constructor(manager?: FerraLink);
     private manager;
     private baseURL;
     private options;

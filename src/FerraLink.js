@@ -5,9 +5,8 @@ const Spotify = require('./module/Spotify');
 
 class FerraLink extends EventEmitter {
 	/**
-	 * @param {*} client
-	 * @param {import('shoukaku').NodeOption[]} nodes
 	 * @param {FerraLinkOptions} options
+	 * @param {import("shoukaku").Connector} connector
 	 */
 	constructor(options, connector) {
 		super();
@@ -24,14 +23,16 @@ class FerraLink extends EventEmitter {
 			if (options.spotify?.length === 1) {
 				this.spotify = new Spotify({ ClientID: options.spotify[0]?.ClientID, ClientSecret: options.spotify[0]?.ClientSecret });
 			} else {
-				for (const client of options.spotify) { this.spotify = new Spotify(client); }
+				for (const client of options.spotify) this.spotify = new Spotify(client);
 				console.warn("[FerraLink Spotify] => You are using the multi client mode, sometimes you can STILL GET RATE LIMITED.");
-			}
-		}
+			};
+		};
+
 		this.shoukaku = new Shoukaku(connector, options.nodes, options.shoukakuoptions);
 		this.players = new Map();
-		this.defaultSearchEngine = options?.defaultSearchEngine || 'youtube';
-	}
+		/** @private */
+		this.defaultSearchEngine = options?.defaultSearchEngine || 'ytsearch';
+	};
 
 	/**
 	 * Create a new player.
@@ -43,11 +44,10 @@ class FerraLink extends EventEmitter {
 		if (existing) return existing;
 
 		let node;
-		if (options.loadBalancer === true) {
-			node = this.getLeastUsedNode();
-		} else { 
-			node = this.shoukaku.getNode('auto'); 
-		}
+		
+		if (options.loadBalancer === true) node = this.getLeastUsedNode();
+		else node = this.shoukaku.getNode('auto');
+
 		if (node === null) return console.log('[FerraLink] => No nodes are existing.');
 
 		const ShoukakuPlayer = await node.joinChannel({
@@ -56,24 +56,27 @@ class FerraLink extends EventEmitter {
 			shardId: options.shardId,
 			deaf: options.deaf || true
 		});
+
 		const FerraLinkPlayer = new Player(this, {
 			guildId: options.guildId,
 			voiceId: options.voiceId,
 			textId: options.textId,
-			volume: `${options.volume}` || '80',
+			volume: options.volume || 80,
 			ShoukakuPlayer
 		});
+
 		this.players.set(options.guildId, FerraLinkPlayer);
-		this.emit('PlayerCreate', FerraLinkPlayer);
+		this.emit('playerCreate', FerraLinkPlayer);
+
 		return FerraLinkPlayer;
-	}
+	};
 
 	getLeastUsedNode() {
 		const nodes = [...this.shoukaku.nodes.values()];
 		const onlineNodes = nodes.filter((node) => node);
 		if (!onlineNodes.length) return console.log("[FerraLink] => No nodes are online.")
 		return onlineNodes.reduce((a, b) => (a.players.size < b.players.size ? a : b));
-	}
+	};
 
 
 	/**
@@ -87,7 +90,8 @@ class FerraLink extends EventEmitter {
 		if (!result || !result.tracks.length) {
 			result = await node.rest.resolve(`ytsearch:${query}`);
 			if (!result || !result.tracks.length) return;
-		}
+		};
+
 		track.track = result.tracks[0].track;
 		return track;
 	}
@@ -100,24 +104,17 @@ class FerraLink extends EventEmitter {
 	 */
 	async search(query, options = { engine: this.defaultSearchEngine }) {
 		if (/^https?:\/\//.test(query)) {
-			if (options.engine === 'FerralinkSpotify') {
-				if (this.manager.spotify.check(query)) {
-					return await this.spotify.resolve(query);
-				}
+			if (options.engine === 'spsearch') {
+				if (this.manager.spotify.check(query)) return this.spotify.resolve(query);
 				return await this.shoukaku.getNode()?.rest.resolve(query);
-			}
+			};
+
 			return await this.shoukaku.getNode()?.rest.resolve(query);
-		}
-		if (options.engine === 'FerralinkSpotify') return await this.manager.spotify.search(query);
-		const engineMap = {
-			youtube: 'ytsearch',
-			youtubemusic: 'ytmsearch',
-			soundcloud: 'scsearch',
-			spotify: 'spsearch',
-			deezer: "dzsearch",
-			yandex: 'ymsearch'
 		};
-		return await this.shoukaku.getNode()?.rest.resolve(`${engineMap[options.engine]}:${query}`);
+
+		if (options.engine === 'spsearch') return await this.manager.spotify.search(query);
+
+		return await this.shoukaku.getNode()?.rest.resolve(`${options.engine}:${query}`);
 	}
 
 	/**
@@ -130,7 +127,7 @@ class FerraLink extends EventEmitter {
 	on(event, listener) {
 		super.on(event, listener);
 		return this;
-	}
+	};
 
 	/**
 	 * Add a "unique" listener to an event.
@@ -142,51 +139,50 @@ class FerraLink extends EventEmitter {
 	once(event, listener) {
 		super.once(event, listener);
 		return this;
-	}
+	};
 }
 
 module.exports = FerraLink;
 
 /**
  * @typedef FerraLinkOptions
- * @property {FerraLinkSpotifyOptions} [spotify]
+ * @property {Array<import("shoukaku").NodeOption>} nodes
+ * @property {import("shoukaku").ShoukakuOptions} shoukakuoptions
+ * @property {Array<FerraLinkSpotifySettings>} spotify
+ * @property {'ytsearch' | 'ytmsearch' | 'spsearch' | 'scsearch'} defaultSearchEngine
  */
 
 /**
- * @typedef FerraLinkSpotifyOptions
- * @property {number} playlistLimit
- * @property {number} albumLimit
- * @property {number} artistLimit
- * @property {string} searchMarket
- * @property {string} clientID
- * @property {string} clientSecret
+ * @typedef FerraLinkSpotifySettings
+ * @property {string} ClientID
+ * @property {string} ClientSecret
  */
 
 /**
  * @typedef FerraLinkCreatePlayerOptions
- * @prop {string} guildId
- * @prop {string} voiceId
- * @prop {string} textId
- * @prop {number} shardId
- * @prop {number} [volume]
- * @prop {boolean} [deaf]
+ * @property {string} guildId
+ * @property {string} voiceId
+ * @property {string} textId
+ * @property {number} shardId
+ * @property {number} [volume]
+ * @property {boolean} [deaf]
  */
 
 /**
  * @typedef FerraLinkSearchOptions
- * @prop {'ytsearch' | 'ytmsearch' | 'spsearch' | 'scsearch'} [engine]
+ * @property {'ytsearch' | 'ytmsearch' | 'spsearch' | 'scsearch'} [engine]
  */
 
 /**
  * @typedef FerraLinkEvents
- * @prop {[player: Player, track: shoukaku.Track]} trackStart
- * @prop {[player: Player, track: shoukaku.Track]} trackEnd
- * @prop {[player: Player]} queueEnd
- * @prop {[player: Player, data: shoukaku.WebSocketClosedEvent]} PlayerClosed
- * @prop {[player: Player, data: shoukaku.TrackExceptionEvent]} trackException
- * @prop {[player: Player, data: shoukaku.PlayerUpdate]} PlayerUpdate
- * @prop {[player: Player, data: shoukaku.TrackStuckEvent]} trackStuck
- * @prop {[player: Player]} PlayerResumed
- * @prop {[player: Player]} playerDestroy
- * @prop {[player: Player]} playerCreate
+ * @property {[player: Player, track: shoukaku.Track]} trackStart
+ * @property {[player: Player, track: shoukaku.Track]} trackEnd
+ * @property {[player: Player]} queueEnd
+ * @property {[player: Player, data: shoukaku.WebSocketClosedEvent]} playerClosed
+ * @property {[player: Player, data: shoukaku.TrackExceptionEvent]} trackException
+ * @property {[player: Player, data: shoukaku.PlayerUpdate]} playerUpdate
+ * @property {[player: Player, data: shoukaku.TrackStuckEvent]} trackStuck
+ * @property {[player: Player]} playerResumed
+ * @property {[player: Player]} playerDestroy
+ * @property {[player: Player]} playerCreate
  */
