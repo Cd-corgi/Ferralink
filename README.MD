@@ -149,3 +149,10 @@ if (loadType === "PLAYLIST_LOADED") {
 > Prahar as the maintainer of [FerraLink Docs](https://ferralink.gitbook.io/untitled).
 >
 > Inspired by [kazagumo](https://www.npmjs.com/package/kazagumo), [Poru](https://www.npmjs.com/package/poru) and [erela.js](https://www.npmjs.com/package/erela.js).
+
+## Donations 🧡🧡
+> You can Donate one of the Devs of this great project!
+>
+> Corgi: [☕ Buy Me A Coffee](https://www.buymeacoffee.com/CorgiOtterBot)
+>
+> Vaibhav: Coming Soon!
