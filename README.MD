@@ -141,6 +141,11 @@ if (loadType === "PLAYLIST_LOADED") {
 |   PlayerCreate    | player	        | Event of the player create.   |
 </center>
 
+## Donations 🧡🧡
+> You can donate to us to improve our project!
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/CorgiOtterBot)
+
 ## Contributors
 > Deivu as the owner of [Shoukaku](https://github.com/Deivu/Shoukaku).
 >
@@ -149,8 +154,3 @@ if (loadType === "PLAYLIST_LOADED") {
 > Prahar as the maintainer of [FerraLink Docs](https://ferralink.gitbook.io/untitled).
 >
 > Inspired by [kazagumo](https://www.npmjs.com/package/kazagumo), [Poru](https://www.npmjs.com/package/poru) and [erela.js](https://www.npmjs.com/package/erela.js).
-
-## Donations 🧡🧡
-> You can donate to us to improve our project!
-
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/CorgiOtterBot)
