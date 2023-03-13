@@ -151,8 +151,6 @@ if (loadType === "PLAYLIST_LOADED") {
 > Inspired by [kazagumo](https://www.npmjs.com/package/kazagumo), [Poru](https://www.npmjs.com/package/poru) and [erela.js](https://www.npmjs.com/package/erela.js).
 
 ## Donations 🧡🧡
-> You can Donate one of the Devs of this great project!
->
-> Corgi: [☕ Buy Me A Coffee](https://www.buymeacoffee.com/CorgiOtterBot)
->
-> Vaibhav: Coming Soon!
+> You can donate to us to improve our project!
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/CorgiOtterBot)
