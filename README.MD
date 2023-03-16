@@ -78,6 +78,11 @@ client.FerraLink = new FerraLink({
 
 ## A small example to create play command.
 ```js
+module.exports = {
+   name: "play",
+   aliases: ["p"],
+   run: async (client, message, args) => {
+   
 const player = await client.FerraLink.createPlayer({
     guildId: message.guild.id,
     voiceId: message.member.voice.channel.id,
@@ -90,7 +95,7 @@ const player = await client.FerraLink.createPlayer({
 const resolve = await player.search(args.join(" "));
 const { loadType, tracks, playlistInfo } = resolve;
 
-if (loadType === "NO_MATCHES" || !tracks.length) return;
+if (loadType === "NO_MATCHES" || !tracks.length) return message.reply({content: "No match songs result found!"});
 
 if (loadType === "PLAYLIST_LOADED") {
     for (const track of tracks) {
@@ -103,6 +108,8 @@ if (loadType === "PLAYLIST_LOADED") {
     if (!player.playing && !player.paused) await player.play();
     message.channel.send({ content: `Queued ${tracks[0].info.title}` });
 } else return;
+  }
+}
 ```
 
 # Getting the Events (shoukaku)
