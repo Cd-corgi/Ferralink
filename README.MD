@@ -74,6 +74,8 @@ client.FerraLink = new FerraLink({
     }],
     defaultSearchEngine: "FerralinkSpotify || youtube || youtubemusic || soundcloud || spotify || deezer",
 }, new Connectors.DiscordJS(client));
+
+client.login("token");
 ```
 
 ## A small example to create play command.
