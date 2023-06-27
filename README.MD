@@ -72,7 +72,7 @@ client.FerraLink = new FerraLink({
         ClientID: "Your spotify clientId here",
         ClientSecret: "Your spotify clientSecret here"
     }],
-    defaultSearchEngine: "FerralinkSpotify || youtube || youtubemusic || soundcloud || spotify || deezer",
+    defaultSearchEngine: "FerralinkSpotify",
 }, new Connectors.DiscordJS(client));
 
 client.login("token");
