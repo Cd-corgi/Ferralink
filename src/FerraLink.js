@@ -12,14 +12,14 @@ class FerraLink extends EventEmitter {
 	constructor(options, connector) {
 		super();
 
-		if (typeof options !== 'object') return console.log("[FerraLink] => FerralinkOptions must be an object");
-		if (!options.nodes) return console.log('[FerraLink] => FerralinkOptions must contain a nodes property');
-		if (!Array.isArray(options.nodes)) return console.log('[FerraLink] => FerralinkOptions.nodes must be an array');
-		if (options.nodes.length === 0) return console.log('[FerraLink] => FerralinkOptions.nodes must contain at least one node');
-		if (!options.shoukakuoptions) return console.log('[FerraLink] => FerralinkOptions must contain a shoukakuoptions property');
+		if (typeof options !== 'object') throw new Error("[FerraLink] => FerralinkOptions must be an object");
+		if (!options.nodes) throw new Error('[FerraLink] => FerralinkOptions must contain a nodes property');
+		if (!Array.isArray(options.nodes)) throw new Error('[FerraLink] => FerralinkOptions.nodes must be an array');
+		if (options.nodes.length === 0) throw new Error('[FerraLink] => FerralinkOptions.nodes must contain at least one node');
+		if (!options.shoukakuoptions) throw new Error('[FerraLink] => FerralinkOptions must contain a shoukakuoptions property');
 		if (options?.spotify) {
-			if (!options.spotify[0]?.ClientID) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientID');
-			if (!options.spotify[0]?.ClientSecret) return console.log('[FerraLink] => FerralinkOptions.spotify must have ClientSecret');
+			if (!options.spotify[0]?.ClientID) throw new Error('[FerraLink] => FerralinkOptions.spotify must have ClientID');
+			if (!options.spotify[0]?.ClientSecret) throw new Error('[FerraLink] => FerralinkOptions.spotify must have ClientSecret');
 
 			if (options.spotify?.length === 1) {
 				this.spotify = new Spotify({ ClientID: options.spotify[0]?.ClientID, ClientSecret: options.spotify[0]?.ClientSecret });
