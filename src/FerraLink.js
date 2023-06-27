@@ -18,11 +18,11 @@ class FerraLink extends EventEmitter {
 		if (options.nodes.length === 0) throw new Error('[FerraLink] => FerralinkOptions.nodes must contain at least one node');
 		if (!options.shoukakuoptions) throw new Error('[FerraLink] => FerralinkOptions must contain a shoukakuoptions property');
 		if (options?.spotify) {
-			if (!options.spotify[0]?.ClientID) throw new Error('[FerraLink] => FerralinkOptions.spotify must have ClientID');
-			if (!options.spotify[0]?.ClientSecret) throw new Error('[FerraLink] => FerralinkOptions.spotify must have ClientSecret');
+			if (!options.spotify[0]?.clientID) throw new Error('[FerraLink] => FerralinkOptions.spotify must have clientID');
+			if (!options.spotify[0]?.clientSecret) throw new Error('[FerraLink] => FerralinkOptions.spotify must have clientSecret');
 
 			if (options.spotify?.length === 1) {
-				this.spotify = new Spotify({ ClientID: options.spotify[0]?.ClientID, ClientSecret: options.spotify[0]?.ClientSecret });
+				this.spotify = new Spotify({ ClientID: options.spotify[0]?.clientID, ClientSecret: options.spotify[0]?.clientSecret });
 			} else {
 				for (const client of options.spotify) { this.spotify = new Spotify(client); }
 				console.warn("[FerraLink Spotify] => You are using the multi client mode, sometimes you can STILL GET RATE LIMITED.");
